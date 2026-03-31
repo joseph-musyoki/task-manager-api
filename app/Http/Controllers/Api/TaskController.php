@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskStatusOnlyRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Requests\UpdateTaskStatusRequest;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
@@ -13,9 +13,10 @@ use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
-    
-     // POST /api/tasks
-    
+    /**
+     * POST /api/tasks
+     * Create a new task.
+     */
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = Task::create($request->validated());
@@ -27,9 +28,11 @@ class TaskController extends Controller
         ], 201);
     }
 
-    
-     //GET /api/tasks
-     
+    /**
+     * GET /api/tasks
+     * List all tasks, sorted by priority (high → low) then due_date ascending.
+     * Optional: ?status=pending|in_progress|done
+     */
     public function index(Request $request): JsonResponse
     {
         // Validate optional status filter
@@ -56,9 +59,10 @@ class TaskController extends Controller
         ]);
     }
 
-   
-     // PUT /api/tasks/{id}
-     
+    /**
+     * PUT /api/tasks/{id}
+     * Update task title, due_date, and priority (NOT status).
+     */
     public function update(UpdateTaskStatusRequest $request, int $id): JsonResponse
     {
         $task = Task::findOrFail($id);
@@ -72,12 +76,34 @@ class TaskController extends Controller
         ]);
     }
 
+    /**
+     * PATCH /api/tasks/{id}/status
+     * Update task status — only forward transitions allowed.
+     */
+    public function updateStatus(UpdateTaskStatusRequest $request, int $id): JsonResponse
+    {
+        $task = Task::findOrFail($id);
+        $newStatus = $request->validated()['status'];
 
-   
-     //PATCH /api/tasks/{id}/status
-     
-    
+        if (!$task->canTransitionTo($newStatus)) {
+            $allowed = Task::STATUS_TRANSITIONS[$task->status] ?? null;
 
+            return response()->json([
+                'success' => false,
+                'message' => $allowed
+                    ? "Invalid transition. '{$task->status}' can only move to '{$allowed}'."
+                    : "Task is already '{$task->status}' and cannot be updated further.",
+            ], 422);
+        }
+
+        $task->update(['status' => $newStatus]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task status updated successfully.',
+            'data'    => $task->fresh(),
+        ]);
+    }
 
     /**
      * DELETE /api/tasks/{id}
@@ -136,29 +162,4 @@ class TaskController extends Controller
             'summary' => $summary,
         ]);
     }
-
-    public function updateStatus(UpdateTaskStatusOnlyRequest $request, int $id): JsonResponse
-    {
-        $task = Task::findOrFail($id);
-        $newStatus = $request->validated()['status'];
-
-        if (!$task->canTransitionTo($newStatus)) {
-         $allowed = Task::STATUS_TRANSITIONS[$task->status] ?? null;
-
-        return response()->json([
-            'success' => false,
-            'message' => $allowed
-                ? "Invalid transition. '{$task->status}' can only move to '{$allowed}'."
-                : "Task is already '{$task->status}' and cannot be updated further.",
-        ], 422);
-    }
-
-    $task->update(['status' => $newStatus]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Task status updated successfully.',
-        'data'    => $task->fresh(),
-    ]);
-}
 }
