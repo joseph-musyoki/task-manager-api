@@ -18,7 +18,7 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Expose port
+# Expose the port
 EXPOSE 8000
 
 # Run migrations and start server
