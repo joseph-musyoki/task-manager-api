@@ -37,3 +37,7 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+# Vite / Frontend
+# =========================
+/node_modules/
+/dist/

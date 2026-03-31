@@ -22,3 +22,50 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# =========================
+# Laravel Core
+# =========================
+/vendor/
+/node_modules/
+/public/build/
+/public/hot
+/storage/*.key
+/storage/debugbar/
+/bootstrap/cache/*.php
+.env
+
+# =========================
+# Logs & Cache
+# =========================
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Keep folder structure
+!/storage/logs/.gitignore
+!/storage/framework/cache/.gitignore
+!/storage/framework/sessions/.gitignore
+!/storage/framework/views/.gitignore
+
+# =========================
+# Vite / Frontend
+# =========================
+/node_modules/
+/dist/
+/build/
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Testing / Misc
+# =========================
+/phpunit.result.cache
+/npm-debug.log
+/yarn-error.log
