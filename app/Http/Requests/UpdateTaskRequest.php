@@ -14,7 +14,7 @@ class UpdateTaskRequest extends FormRequest
 
     public function rules(): array
     {
-        $taskId = $this->route('id');
+        $taskId = $this->route('task');
 
         return [
             'title' => [
