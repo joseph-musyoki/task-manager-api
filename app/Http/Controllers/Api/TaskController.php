@@ -63,7 +63,7 @@ class TaskController extends Controller
      * PUT /api/tasks/{id}
      * Update task title, due_date, and priority (NOT status).
      */
-    public function update(UpdateTaskStatusRequest $request, int $id): JsonResponse
+    public function update(UpdateTaskRequest $request, int $id): JsonResponse
     {
         $task = Task::findOrFail($id);
 
